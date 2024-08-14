@@ -1,0 +1,24 @@
+{
+	"[php]": {
+		"editor.tabSize": 2,
+		"editor.formatOnSaveMode": "file",
+		"editor.formatOnSave": true,
+		"editor.tabCompletion": "on",
+		"editor.insertSpaces": false,
+		"editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+	},
+	"[markdown]": {
+		"editor.insertSpaces": true
+	},
+	// "indentRainbow.includedLanguages": [],
+	"editor.tabSize": 2,
+	"editor.formatOnSaveMode": "file",
+	"editor.tabCompletion": "on",
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	"prettier.useTabs": true,
+	"editor.insertSpaces": false,
+	"files.associations": {
+		"*.tsx": "typescriptreact"
+	}
+}

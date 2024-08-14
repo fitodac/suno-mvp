@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    //
+    /*
+    Require install extension:
+        Name: Debugger for Chrome
+        Id: msjsdiag.debugger-for-chrome
+        Description: Debug your JavaScript code in the Chrome browser, or any other target that supports the Chrome Debugger protocol.
+        Version: 4.12.12
+        Publisher: Microsoft
+        VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome
+    */
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "https://localhost:3116",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "run-vite-server",
+        }
+    ]
+}
