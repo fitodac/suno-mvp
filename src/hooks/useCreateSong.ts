@@ -42,14 +42,12 @@ export const useCreateSong = () => {
 				}
 			)
 			const data = await response.json()
-			console.log('data', data)
 
-			// const id = '8bfca5e8-e33a-4d43-9cd8-2a9625981372'
 			await fetchClip(data[0].id)
-			// const clip = await fetchClip(id)
-			// console.log('clip', clip)
+
 		} catch (err) {
 			console.log('useCreateSong error', err)
+			// @ts-ignore
 			setErrorCreatingSong(err.message)
 		} finally {
 			cb()

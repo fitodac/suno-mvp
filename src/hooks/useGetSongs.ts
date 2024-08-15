@@ -23,6 +23,7 @@ export const useGetSongs = () => {
 			setSongs(data)
 		} catch (err) {
 			console.log('useGetSongs error', err)
+			// @ts-ignore
 			setError(err.message)
 		} finally {
 			setLoadingSongs(false)
