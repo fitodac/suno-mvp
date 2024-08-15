@@ -11,37 +11,59 @@ import {
 	cn,
 } from '@nextui-org/react'
 import numeral from 'numeral'
-import { useGetQuota, useGetSongs } from '@/hooks'
+import { useCreateSong, useGetQuota, useGetSongs } from '@/hooks'
 
 export default function Home() {
 	/**
 	 * Prompt generator
 	 * -------------------------------------------------------------------------------------------------------
 	 */
-	const { quota } = useGetQuota()
+	const { quota, getQuota } = useGetQuota()
 
 	const [form, setForm] = useState({
 		prompt: '',
 		make_instrumental: false,
 		model: 'chirp-v3-5|chirp-v3-0',
 	})
+
+	const { createSong, creatingSong, errorCreatingSong } = useCreateSong()
+
+	const generatePrompt = () => {
+		getQuota()
+		console.log('propmt generated')
+
+		createSong(form, () => {
+			setLoadingSongs(true)
+			fetchSongs()
+		})
+	}
+
 	/**
 	 * Prompt generator end
 	 * -------------------------------------------------------------------------------------------------------
 	 */
 
 	/**
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
 	 * PLAYER START
 	 * -------------------------------------------------------------------------------------------------------
 	 */
 	const [plyrSrc, setPlyrSrc] = useState<null | string>('')
+	const [active, setActive] = useState<string>('')
 	const plyr = useRef<HTMLAudioElement>(null)
 
 	useEffect(() => {
 		if (plyr.current) plyr.current.play()
 	}, [plyr])
 
-	const { songs, loadingSongs, fetchSongsError } = useGetSongs()
+	const { songs, fetchSongs, loadingSongs, setLoadingSongs, fetchSongsError } =
+		useGetSongs()
 
 	// Player start
 	const playerStart = (src: string) => {
@@ -62,8 +84,22 @@ export default function Home() {
 	 * PLAYER END
 	 */
 
+	/**
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 * -------------------------------------------------------------------------------------------------------
+	 * RENDER
+	 */
+
 	return (
-		<main className="flex min-h-screen flex-col items-center px-10 pb-7">
+		<main className="flex min-h-screen flex-col px-10 pb-7 font-extralight">
 			<div className="w-full flex py-8">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -83,35 +119,72 @@ export default function Home() {
 						</div>
 					)}
 
-					<fieldset>
-						<Textarea
-							size="lg"
-							minRows={10}
-							onValueChange={(e) => {
-								if (form.prompt.length <= 3000) setForm({ ...form, prompt: e })
-							}}
-						></Textarea>
-						<div className="text-sm mt-2 flex justify-end">
-							{form.prompt.length}/3000
+					<div className="relative space-y-4">
+						<fieldset>
+							<Textarea
+								size="lg"
+								minRows={10}
+								onValueChange={(e) => {
+									if (form.prompt.length <= 3000)
+										setForm({ ...form, prompt: e })
+								}}
+								defaultValue={form.prompt}
+								isDisabled={creatingSong}
+								classNames={{
+									inputWrapper: 'h-52',
+									input: 'font-extralight',
+								}}
+							></Textarea>
+							<div className="text-sm mt-2 flex justify-end">
+								{form.prompt.length}/3000
+							</div>
+						</fieldset>
+
+						<div className="flex justify-between items-center gap-10">
+							<Switch
+								defaultSelected={form.make_instrumental}
+								onValueChange={(e) =>
+									setForm({ ...form, make_instrumental: e })
+								}
+								isDisabled={creatingSong}
+							>
+								Instrumental
+							</Switch>
+
+							<Button
+								size="lg"
+								type="submit"
+								color="primary"
+								className="px-20"
+								onPress={generatePrompt}
+								isDisabled={creatingSong}
+							>
+								Crear
+							</Button>
 						</div>
-					</fieldset>
 
-					<div className="flex justify-between items-center gap-10">
-						<Switch
-							defaultSelected={form.make_instrumental}
-							onValueChange={(e) => setForm({ ...form, make_instrumental: e })}
-						>
-							Instrumental
-						</Switch>
-
-						<Button size="lg" type="submit" color="primary" className="px-20">
-							Crear
-						</Button>
+						{creatingSong && (
+							<Spinner className="absolute left-1/2 top-1/2 z-30" />
+						)}
 					</div>
 
-					<pre className="text-foreground-400 mt-10">
-						{JSON.stringify(form, null, 2)}
-					</pre>
+					{errorCreatingSong && (
+						<div className="text-danger">Error al crear la canción</div>
+					)}
+
+					<div className={cn(creatingSong && 'opacity-50 pointer-events-none')}>
+						<div className="mt-10 text-sm">Prompts de ejemplo</div>
+						<div className="mt-2 space-y-3 text-sm font-extralight">
+							<div className="bg-gray-900 p-3 rounded-xl">
+								Pop, Dance Pop, Ethereal, female vocals, catchy, eletronic, 130
+								bpm, high quality production, perfect sounds
+							</div>
+							<div className="bg-gray-900 p-3 rounded-xl">
+								Dance-pop, nostalgic, intimate, emotive male voice,Synth lead,
+								bassline. high-quality production,perfect sounds, earworm
+							</div>
+						</div>
+					</div>
 				</div>
 
 				{/* Sidebar */}
@@ -135,6 +208,12 @@ export default function Home() {
 										loadingSongs && 'opacity-30 pointer-events-none'
 									)}
 								>
+									{songs && !songs.length && (
+										<div className="font-extralight">
+											No hay canciones para mostrar
+										</div>
+									)}
+
 									{songs &&
 										songs.map((e) => (
 											<Button
@@ -143,10 +222,25 @@ export default function Home() {
 												className={cn(
 													'bg-transparent flex gap-5 items-center h-auto justify-start p-0 group'
 												)}
-												onPress={() => playerStart(e.audio_url)}
+												onPress={() => {
+													playerStart(e.audio_url)
+													setActive(e.id)
+												}}
 											>
-												<div className="relative overflow-hidden rounded-xl border-2 border-foreground-300">
-													<div className="bg-black/30 inset-0 absolute flex items-center justify-center z-30 opacity-0 group-hover:opacity-100">
+												<div
+													className={cn(
+														'relative overflow-hidden rounded-2xl border-2',
+														active === e.id
+															? 'border-primary'
+															: 'border-foreground-300'
+													)}
+												>
+													<div
+														className={cn(
+															'bg-black/30 inset-0 absolute flex items-center justify-center z-30 group-hover:opacity-100',
+															active !== e.id && 'opacity-0'
+														)}
+													>
 														<svg
 															xmlns="http://www.w3.org/2000/svg"
 															viewBox="0 0 24 24"
@@ -160,7 +254,10 @@ export default function Home() {
 														width={100}
 														height={100}
 														fallbackSrc="https://via.placeholder.com/100x100"
-														src={e.image_url}
+														src={
+															e.image_url ??
+															'https://via.placeholder.com/100x100'
+														}
 														alt={e.title}
 														removeWrapper
 														classNames={{
@@ -172,7 +269,9 @@ export default function Home() {
 												<div className="flex flex-col items-start">
 													<div className="text-lg">{e.title}</div>
 													<div className="text-foreground-400 text-sm font-medium">
-														{numeral(e.duration).format('00:00')}
+														{e.duration
+															? numeral(e.duration).format('00:00')
+															: '--:--'}
 													</div>
 												</div>
 											</Button>

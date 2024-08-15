@@ -10,28 +10,28 @@ interface Quota {
 export const useGetQuota = () => {
 	const [quota, setQuota] = useState<Quota | null>(null)
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await fetch(
-					'https://sunoapi-fitodacs-projects.vercel.app/api/get_limit'
-				)
+	const getQuota = async () => {
+		try {
+			const response = await fetch(
+				'https://sunoapi-fitodacs-projects.vercel.app/api/get_limit'
+			)
 
-				if (!response.ok) {
-					throw new Error('Error en la solicitud')
-				}
-
-				const data = await response.json()
-				console.log('data', data)
-				setQuota(data)
-			} catch (err) {
-				console.log('useGetSongs error', err)
-			} finally {
+			if (!response.ok) {
+				throw new Error('Error en la solicitud')
 			}
-		}
 
-		fetchData()
+			const data = await response.json()
+			// console.log('data', data)
+			setQuota(data)
+		} catch (err) {
+			console.log('useGetSongs error', err)
+		} finally {
+		}
+	}
+
+	useEffect(() => {
+		getQuota()
 	}, [])
 
-	return { quota }
+	return { quota, getQuota }
 }

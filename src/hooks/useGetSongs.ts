@@ -3,33 +3,35 @@ import type { Songs } from '@/app/types'
 
 export const useGetSongs = () => {
 	const [loadingSongs, setLoadingSongs] = useState(true)
-	const [songs, setSongs] = useState<null | Songs>(null)
+	const [songs, setSongs] = useState<Songs>([])
 	const [fetchSongsError, setError] = useState(null)
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await fetch(
-					'https://sunoapi-fitodacs-projects.vercel.app/api/get'
-				)
+	const fetchSongs = async () => {
+		setLoadingSongs(true)
 
-				if (!response.ok) {
-					throw new Error('Error en la solicitud')
-				}
+		try {
+			const response = await fetch(
+				'https://sunoapi-fitodacs-projects.vercel.app/api/get'
+			)
 
-				const data = await response.json()
-				// console.log('data', data)
-				setSongs(data)
-			} catch (err) {
-				console.log('useGetSongs error', err)
-				setError(err.message)
-			} finally {
-				setLoadingSongs(false)
+			if (!response.ok) {
+				throw new Error('Error en la solicitud')
 			}
-		}
 
-		fetchData()
+			const data = await response.json()
+			// console.log('data', data)
+			setSongs(data)
+		} catch (err) {
+			console.log('useGetSongs error', err)
+			setError(err.message)
+		} finally {
+			setLoadingSongs(false)
+		}
+	}
+
+	useEffect(() => {
+		fetchSongs()
 	}, [])
 
-	return { songs, loadingSongs, fetchSongsError }
+	return { songs, setSongs, loadingSongs, setLoadingSongs, fetchSongsError, fetchSongs }
 }
