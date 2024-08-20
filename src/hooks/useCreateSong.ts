@@ -6,8 +6,6 @@ interface Props {
 	model: string
 }
 
-
-
 const fetchClip = async (id: string) => {
 	const response = await fetch(
 		`https://sunoapi-fitodacs-projects.vercel.app/api/clip?id=${id}`
@@ -16,7 +14,7 @@ const fetchClip = async (id: string) => {
 	const data = await response.json()
 
 	if (!['complete', 'streaming'].includes(data.status)) {
-		await new Promise(resolve => setTimeout(resolve, 2000));
+		await new Promise((resolve) => setTimeout(resolve, 2000))
 		await fetchClip(id)
 	}
 
@@ -41,10 +39,14 @@ export const useCreateSong = () => {
 					body: JSON.stringify(props),
 				}
 			)
+
 			const data = await response.json()
-
-			await fetchClip(data[0].id)
-
+			
+			if (data.error) {
+				alert(data.error)
+			} else {
+				await fetchClip(data[0].id)
+			}
 		} catch (err) {
 			console.log('useCreateSong error', err)
 			// @ts-ignore
