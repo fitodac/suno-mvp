@@ -11,7 +11,7 @@
   "dependencies": {
     "@nextui-org/react": "^2.4.6",
     "framer-motion": "^11.3.24",
-    "next": "14.2.5",
+    "next": "14.2.35",
     "numeral": "^2.0.6",
     "plyr": "^3.7.8",
     "react": "^18",
